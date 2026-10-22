@@ -1,0 +1,6 @@
+#ifndef LIFELESS_VERSION_H
+#define LIFELESS_VERSION_H
+
+#define LIFELESS_VERSION "0.0.1"
+
+#endif
