@@ -25,23 +25,25 @@ override CFLAGS += -MMD -MP
 LDFLAGS ?=
 LDLIBS  ?=
 
-# Look up a cross compiler: "x86_64-linux-musl" -> "x86_64-linux-musl-gcc".
 find-cc = $(shell command -v $(1)-gcc 2>/dev/null)
 
 .DEFAULT_GOAL := $(OUT_DIR)/$(BINARY_NAME)
 
 .PHONY: all help clean x86_64
 
-all: $(OUT_DIR)/$(BINARY_NAME)
+all: x86_64 aarch64 riscv64
+	@echo "[+] all three targets built"
 
 help:
 	@echo "lifeless, a lifeless language"
 	@echo ""
 	@echo "targets:"
-	@echo "  all               build $(OUT_DIR)/$(BINARY_NAME) (default)"
+	@echo "  all               build for all targets"
 	@echo "  clean             remove the out dir"
 	@echo "  format            format source files with clang-format"
 	@echo "  x86_64            cross build for x86_64-linux-musl"
+	@echo "  aarch64           cross build for aarch64-linux-musl"
+	@echo "  risv64            cross build for riscv64-linux-musl"
 	@echo ""
 	@echo "variables: CC, CFLAGS, CPPFLAGS, LDFLAGS, V=0 (quiet)"
 
@@ -65,6 +67,28 @@ x86_64:
 			LDFLAGS="-static"; \
 	else \
 		echo "Error: x86_64-linux-musl-gcc was not found"; exit 1; \
+	fi
+
+aarch64:
+	@CROSS_CC="$(call find-cc,aarch64-linux-musl)"; \
+	if [ -n "$$CROSS_CC" ]; then \
+		echo "[+] Cross building with $$CROSS_CC"; \
+		$(MAKE) -j$(NPROC) OUT_DIR=$(OUT_DIR)/aarch64 CC="$$CROSS_CC" \
+			CFLAGS="-std=c11 -O2 -g -Wall -Wextra -Wpedantic -static" \
+			LDFLAGS="-static -fno-link-libatomic"; \
+	else \
+		echo "Error: aarch64-linux-musl not found"; exit 1; \
+	fi
+
+riscv64:
+	@CROSS_CC="$(call find-cc,riscv64-linux-musl)"; \
+	if [ -n "$$CROSS_CC" ]; then \
+		echo "[+] Cross building with $$CROSS_CC"; \
+		$(MAKE) -j$(NPROC) OUT_DIR=$(OUT_DIR)/riscv64 CC="$$CROSS_CC" \
+			CFLAGS="-std=c11 -O2 -g -Wall -Wextra -Wpedantic -static" \
+			LDFLAGS="-static -fno-link-libatomic"; \
+	else \
+		echo "Error: riscv64-linux-musl not found"; exit 1; \
 	fi
 
 format:
