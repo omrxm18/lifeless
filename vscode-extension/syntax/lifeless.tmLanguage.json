@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Lifeless",
+  "scopeName": "source.lifeless",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" },
+    { "include": "#functions" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.lifeless", "match": "//.*$" },
+        { "name": "comment.block.lifeless", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.lifeless",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.lifeless", "match": "\\\\." }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.lifeless",
+          "match": "\\b(if|else|while|for|return)\\b"
+        },
+        {
+          "name": "storage.type.lifeless",
+          "match": "\\b(fn|let|const|struct)\\b"
+        },
+        {
+          "name": "constant.language.lifeless",
+          "match": "\\b(true|false|null)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.lifeless",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    }
+  }
+}

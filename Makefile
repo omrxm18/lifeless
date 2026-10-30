@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 BINARY_NAME = lifeless
+LSP_BINARY_NAME = lifeful
+LSP_DIR 		= src/lsp
 SRC_DIR     = src
 OUT_DIR     = out
 OBJ_DIR     = $(OUT_DIR)/obj
@@ -10,9 +12,25 @@ OBJ_DIR     = $(OUT_DIR)/obj
 CC    ?= cc
 STRIP ?= strip
 
-SRCS := $(shell find $(SRC_DIR) -type f -name '*.c' | sort)
-OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
-DEPS := $(OBJS:.o=.d)
+COMMON_SRCS := \
+	$(SRC_DIR)/lib/arena.c \
+	$(SRC_DIR)/lib/lexer.c \
+	$(SRC_DIR)/lib/brain.c \
+	$(SRC_DIR)/lib/parser.c \
+	$(SRC_DIR)/lib/complaints.c
+
+COMPILER_SRCS := \
+	$(SRC_DIR)/main.c \
+	$(SRC_DIR)/lib/life_support.c \
+	$(COMMON_SRCS)
+COMPILER_OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(COMPILER_SRCS))
+
+LSP_SRCS := \
+	$(shell find $(LSP_DIR) -type f -name '*.c' | sort) \
+	$(COMMON_SRCS)
+LSP_OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(LSP_SRCS))
+
+DEPS := $(sort $(COMPILER_OBJS:.o=.d) $(LSP_OBJS:.o=.d))
 
 NPROC ?= $(shell nproc 2>/dev/null || echo 1)
 
@@ -27,9 +45,10 @@ LDLIBS  ?=
 
 find-cc = $(shell command -v $(1)-gcc 2>/dev/null)
 
-.DEFAULT_GOAL := $(OUT_DIR)/$(BINARY_NAME)
+binaries: $(OUT_DIR)/$(BINARY_NAME) $(OUT_DIR)/$(LSP_BINARY_NAME)
+.DEFAULT_GOAL := binaries
 
-.PHONY: all help clean x86_64
+.PHONY: all binaries lifeful help format x86_64 aarch64 riscv64
 
 all: x86_64 aarch64 riscv64
 	@echo "[+] all three targets built"
@@ -51,10 +70,17 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-
-$(OUT_DIR)/$(BINARY_NAME): $(OBJS)
+$(OBJ_DIR)/lsp/%.o: $(LSP_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(OBJS) $(LDFLAGS) $(LDLIBS) -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(OUT_DIR)/$(BINARY_NAME): $(COMPILER_OBJS)
+	@mkdir -p $(dir $@)
+	$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
+
+$(OUT_DIR)/$(LSP_BINARY_NAME): $(LSP_OBJS)
+	@mkdir -p $(dir $@)
+	$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 # Cross build for x86_64 Linux with musl. It uses its own output directory so
 # the musl objects never mix with the host ones.
@@ -93,10 +119,7 @@ riscv64:
 
 format:
 	@command -v clang-format >/dev/null 2>&1 || { echo "Error: clang-format not found"; exit 1; }
-	@find $(SRC_DIR) -name '*.c' -o -name '*.h' | xargs clang-format -i
+	@find $(SRC_DIR) $(LSP_DIR) -name '*.c' -o -name '*.h' | xargs clang-format -i
 	@echo "[+] Done"
-
-clean:
-	@rm -rf $(OUT_DIR)
 
 -include $(DEPS)

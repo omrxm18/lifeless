@@ -1,0 +1,85 @@
+{
+  "name": "lifeless-vscode",
+  "displayName": "Lifeless Language Support",
+  "description": "Language support powered by lifeful",
+  "repository": "https://git.x01.dpdns.org/lifeless.git",
+  "version": "0.0.1",
+  "publisher": "omrxm18",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:lifeless"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "lifeless",
+        "aliases": [
+          "Lifeless"
+        ],
+        "extensions": [
+          ".lfs"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "lifeful.restartServer",
+        "title": "Lifeful: Restart Server"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "lifeless",
+        "scopeName": "source.lifeless",
+        "path": "./syntaxes/lifeless.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Lifeless",
+      "properties": {
+        "lifeful.serverPath": {
+          "type": "string",
+          "default": "lifeful",
+          "description": "Path to the lifeful executable"
+        },
+        "lifeful.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Trace communication between VS Code and lifeful"
+        }
+      }
+    }
+  },
+  "semanticTokenTypes": [
+    {
+      "id": "myType",
+      "superType": "type",
+      "description": "A Lifeless type"
+    }
+  ],
+  "semanticTokenScopes": [
+    {
+      "language": "lifeless",
+      "scopes": {
+        "myType": [
+          "entity.name.type.lifeless"
+        ]
+      }
+    }
+  ],
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}
