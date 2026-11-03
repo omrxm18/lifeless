@@ -7,9 +7,7 @@
 
 #include "server.h"
 
-static void print_usage(FILE *out) {
-  fprintf(out, "usage: lifeful --stdio\n");
-}
+static void print_usage(FILE *out) { fprintf(out, "usage: lifeful --stdio\n"); }
 
 int main(int argc, char **argv) {
   if (argc == 2 && strcmp(argv[1], "--stdio") == 0)

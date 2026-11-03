@@ -753,8 +753,8 @@ static int handle_message(struct server *s, const char *message,
   } else if (strcmp(method, "textDocument/didClose") == 0) {
     ok = handle_did_close(s, &doc, params);
   } else if (strcmp(method, "textDocument/completion") == 0) {
-  if (has_id)
-    ok = handle_completion(s, &doc, params, id_raw, id_len);
+    if (has_id)
+      ok = handle_completion(s, &doc, params, id_raw, id_len);
   } else if (strcmp(method, "shutdown") == 0) {
     if (has_id) {
       s->shutdown_requested = 1;

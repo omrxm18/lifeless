@@ -57,8 +57,8 @@ static int parse_string_end(struct parser *p, size_t *end) {
     if (p->pos >= len)
       return 0;
     c = (unsigned char)s[p->pos++];
-    if (c == '"' || c == '\\' || c == '/' || c == 'b' || c == 'f' ||
-        c == 'n' || c == 'r' || c == 't')
+    if (c == '"' || c == '\\' || c == '/' || c == 'b' || c == 'f' || c == 'n' ||
+        c == 'r' || c == 't')
       continue;
     if (c != 'u' || p->pos + 4 > len)
       return 0;
@@ -221,9 +221,8 @@ static int parse_value(struct parser *p, unsigned depth, size_t *index) {
     const char *text;
     size_t length;
     enum json_type type;
-  } literals[] = { {"true", 4, JSON_TRUE},
-                   {"false", 5, JSON_FALSE},
-                   {"null", 4, JSON_NULL} };
+  } literals[] = {
+      {"true", 4, JSON_TRUE}, {"false", 5, JSON_FALSE}, {"null", 4, JSON_NULL}};
   for (size_t i = 0; i < sizeof literals / sizeof literals[0]; i++) {
     if (len - p->pos >= literals[i].length &&
         memcmp(s + p->pos, literals[i].text, literals[i].length) == 0) {
@@ -267,8 +266,7 @@ static int string_token_equals(const struct json_doc *doc, int token,
   return equal;
 }
 
-int json_object_get(const struct json_doc *doc, int object,
-                    const char *name) {
+int json_object_get(const struct json_doc *doc, int object, const char *name) {
   size_t i;
   if (object < 0 || (size_t)object >= doc->count ||
       doc->tokens[object].type != JSON_OBJECT)
@@ -315,19 +313,23 @@ static int append_utf8(char *out, size_t cap, size_t *used, unsigned code) {
   unsigned char bytes[4];
   size_t n;
   if (code <= 0x7f) {
-    bytes[0] = (unsigned char)code; n = 1;
+    bytes[0] = (unsigned char)code;
+    n = 1;
   } else if (code <= 0x7ff) {
     bytes[0] = (unsigned char)(0xc0 | (code >> 6));
-    bytes[1] = (unsigned char)(0x80 | (code & 0x3f)); n = 2;
+    bytes[1] = (unsigned char)(0x80 | (code & 0x3f));
+    n = 2;
   } else if (code <= 0xffff) {
     bytes[0] = (unsigned char)(0xe0 | (code >> 12));
     bytes[1] = (unsigned char)(0x80 | ((code >> 6) & 0x3f));
-    bytes[2] = (unsigned char)(0x80 | (code & 0x3f)); n = 3;
+    bytes[2] = (unsigned char)(0x80 | (code & 0x3f));
+    n = 3;
   } else if (code <= 0x10ffff) {
     bytes[0] = (unsigned char)(0xf0 | (code >> 18));
     bytes[1] = (unsigned char)(0x80 | ((code >> 12) & 0x3f));
     bytes[2] = (unsigned char)(0x80 | ((code >> 6) & 0x3f));
-    bytes[3] = (unsigned char)(0x80 | (code & 0x3f)); n = 4;
+    bytes[3] = (unsigned char)(0x80 | (code & 0x3f));
+    n = 4;
   } else {
     return 0;
   }
@@ -374,14 +376,30 @@ char *json_string_copy_len(const struct json_doc *doc, int token,
     }
     c = (unsigned char)s[++i];
     switch (c) {
-    case '"': out[used++] = '"'; break;
-    case '\\': out[used++] = '\\'; break;
-    case '/': out[used++] = '/'; break;
-    case 'b': out[used++] = '\b'; break;
-    case 'f': out[used++] = '\f'; break;
-    case 'n': out[used++] = '\n'; break;
-    case 'r': out[used++] = '\r'; break;
-    case 't': out[used++] = '\t'; break;
+    case '"':
+      out[used++] = '"';
+      break;
+    case '\\':
+      out[used++] = '\\';
+      break;
+    case '/':
+      out[used++] = '/';
+      break;
+    case 'b':
+      out[used++] = '\b';
+      break;
+    case 'f':
+      out[used++] = '\f';
+      break;
+    case 'n':
+      out[used++] = '\n';
+      break;
+    case 'r':
+      out[used++] = '\r';
+      break;
+    case 't':
+      out[used++] = '\t';
+      break;
     case 'u': {
       unsigned code;
       if (i + 4 >= end || !read_u16(s + i + 1, &code)) {

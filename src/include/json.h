@@ -36,11 +36,11 @@ int json_parse(struct json_doc *doc, const char *source, size_t source_len);
 void json_destroy(struct json_doc *doc);
 
 /* Return a token index, or -1 when absent / of the wrong container type. */
-int json_object_get(const struct json_doc *doc, int object,
-                    const char *name);
+int json_object_get(const struct json_doc *doc, int object, const char *name);
 int json_array_get(const struct json_doc *doc, int array, size_t index);
 
-/* Decode a JSON string token to UTF-8. The returned allocation is caller-owned. */
+/* Decode a JSON string token to UTF-8. The returned allocation is caller-owned.
+ */
 char *json_string_copy(const struct json_doc *doc, int token);
 char *json_string_copy_len(const struct json_doc *doc, int token,
                            size_t *decoded_length);
