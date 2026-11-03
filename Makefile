@@ -64,7 +64,7 @@ help:
 	@echo "  aarch64           cross build for aarch64-linux-musl"
 	@echo "  risv64            cross build for riscv64-linux-musl"
 	@echo ""
-	@echo "variables: CC, CFLAGS, CPPFLAGS, LDFLAGS, V=0 (quiet)"
+	@echo "variables: CC, CFLAGS, CPPFLAGS, LDFLAGS"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
@@ -82,8 +82,7 @@ $(OUT_DIR)/$(LSP_BINARY_NAME): $(LSP_OBJS)
 	@mkdir -p $(dir $@)
 	$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
-# Cross build for x86_64 Linux with musl. It uses its own output directory so
-# the musl objects never mix with the host ones.
+# Cross build for x86_64, aarch64, riscv64 Linux with musl.
 x86_64:
 	@CROSS_CC="$(call find-cc,x86_64-linux-musl)"; \
 	if [ -n "$$CROSS_CC" ]; then \
